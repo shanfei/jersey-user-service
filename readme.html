@@ -47,6 +47,9 @@
             background-color : #DCE2F5;
         }
     </style>
+	<link rel="stylesheet" href="http://yandex.st/highlightjs/7.0/styles/default.min.css">
+	<script src="http://yandex.st/highlightjs/7.0/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
 
@@ -81,7 +84,8 @@ Openfire makes the request.
 <h2>Using the Plugin</h2>
 
 To administer users, submit HTTP requests to the service. 
-The service address is [hostname]/plugins/jerseyuserservice/{username} - where {username} is the required username. 
+The service address is <b>[hostname]/plugins/jerseyuserservice/{username}</b> <br/>
+where <b>{username}</b> is the required username. <br/>
 For example, if your server name is "example.com", the URL is http://example.com/plugins/jerseyuserservice/{username}<p>
 
 The service is based on a classic CRUD REST pattern. By changing the request type (GET, POST, PUT, DELETE) different actions can be performed on the user.
@@ -91,7 +95,7 @@ All requests require the secret key as a query parameter "token={secret}".
 <div id="datatable">
 <table cellpadding="3" cellspacing="1" border="0" width="700">
 <tr>
-    <th colspan=2>Name</th><th>Request Format</th><th>Description</th>
+    <th>Name</th><th>Request Format</th><th>Description</th>
 </tr>
 <tr>
     <td class="name">Get User</td>
@@ -102,7 +106,13 @@ All requests require the secret key as a query parameter "token={secret}".
     <td class="name">Update User</td>
 	<td>/{username} (PUT)</td>
     <td>Update the username. Expects a JSON object of the form: <br/>
-	{"email":"john.smith@example.com", "groups":"Group1,Group2", "password":"password","name":"John Smith"}</td>
+<pre><code class="json">{
+  "email":"john.smith@example.com",
+  "groups":"Group1,Group2",
+  "password":"password",
+  "name":"John Smith"
+}
+</code></pre></td>
 </tr>
 <tr>
     <td class="name">Delete User</td>
@@ -113,7 +123,13 @@ All requests require the secret key as a query parameter "token={secret}".
     <td class="name">Add User</td>
 	<td>/{username} (POST)</td>
     <td>Adds the user with the given username. Expects a JSON object of the form: <br/>
-	{"email":"john.smith@example.com", "groups":"Group1,Group2", "password":"password","name":"John Smith"}</td>
+<pre><code class="json">{
+  "email":"john.smith@example.com",
+  "groups":"Group1,Group2",
+  "password":"password",
+  "name":"John Smith"
+}
+</code></pre></td></td>
 </tr>
 <tr>
     <td class="name">Enabled User</td>
@@ -135,7 +151,7 @@ All requests require the secret key as a query parameter "token={secret}".
 <br><br>
 * When sending double characters (Chinese/Japanese/Korean etc) you should url encode the string as UTF-8.<br> 
 In Java this is done like this:<br> 
-URLEncoder.encode(username, "UTF-8"));
+<pre><code class="java">URLEncoder.encode(username, "UTF-8"));</code></pre>
 <br>If the strings are encoded incorrectly, double byte characters will look garbeled in the Admin Console.
 
 
@@ -143,18 +159,20 @@ URLEncoder.encode(username, "UTF-8"));
 
 The server will reply to all User Service requests with an XML or JSON response. 
 If the request was processed successfully the return will be an object of the form: <br/>
-{
+<pre><code class="json">{
     "action": "UPDATE",
     "userName": "JohnSmith"
 }
+</code></pre>
 <br/>
 Where the action represents the action performed.
 <br/>
 If the request was unsuccessful, the return will be an object of the form: <br/>
-{
+<pre><code class="json">{
     "reason": "Username JohnSmith already exists",
     "type": "UserAlreadyExistsException"
 }
+</pre></code>
 <p>
 
 

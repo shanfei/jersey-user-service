@@ -30,6 +30,14 @@ public class UserResource {
     }
 
     @GET
+    @Path("/purge/")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public SuccessResponse deleteAllUsers() {
+        plugin.deleteAllUsers();
+        return new SuccessResponse("", "PURGE");
+    }
+
+    @GET
     @Path("/{username}/enable")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public SuccessResponse enableUser(@PathParam(value = "username") final String userName) {

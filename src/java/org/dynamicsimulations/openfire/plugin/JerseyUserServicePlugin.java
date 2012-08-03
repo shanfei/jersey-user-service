@@ -20,7 +20,6 @@
 package org.dynamicsimulations.openfire.plugin;
 
 import org.dynamicsimulations.openfire.plugin.model.UserData;
-import org.eclipse.jetty.util.log.Log;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
@@ -36,6 +35,8 @@ import org.jivesoftware.util.JiveGlobals;
 import org.jivesoftware.util.StringUtils;
 import org.jivesoftware.util.PropertyEventListener;
 import org.jivesoftware.util.PropertyEventDispatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
 
 import java.io.File;
@@ -48,6 +49,7 @@ import java.util.*;
  */
 public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
     public static final String PLUGIN_NAME = "jerseyuserservice";
+    private static final Logger Log = LoggerFactory.getLogger(JerseyUserServicePlugin.class);
 
     private UserManager userManager;
     private XMPPServer server;
@@ -170,6 +172,21 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
             return userManager.getUser(targetJID.getNode());
         } catch (org.jivesoftware.openfire.user.UserNotFoundException e) {
             throw new UserNotFoundException(e);
+        }
+    }
+
+    public void deleteAllUsers() {
+        Collection<User> users = userManager.getUsers();
+
+        for (User u : users) {
+            try {
+                if (!u.getUsername().equals("admin")) {
+                    userManager.deleteUser(u);
+                }
+            } catch (Exception e) {
+                // Eat exception
+                Log.error("Purge Error", e);
+            }
         }
     }
 

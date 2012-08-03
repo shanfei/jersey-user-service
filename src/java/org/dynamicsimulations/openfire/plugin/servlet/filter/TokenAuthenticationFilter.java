@@ -1,4 +1,4 @@
-package org.dynamicsimulations.openfire.plugin.servlet;
+package org.dynamicsimulations.openfire.plugin.servlet.filter;
 
 
 import com.sun.jersey.spi.container.ContainerRequest;

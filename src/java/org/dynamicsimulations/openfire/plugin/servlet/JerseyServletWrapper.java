@@ -22,7 +22,7 @@ public class JerseyServletWrapper extends ServletContainer {
     private static final String RESOURCE_CONFIG_CLASS = "com.sun.jersey.api.core.PackagesResourceConfig";
 
     private static final String CONTAINER_REQUEST_FILTER_KEY = "com.sun.jersey.spi.container.ContainerRequestFilters";
-    private static final String TOKEN_AUTHENTICATION_FILTER = "org.dynamicsimulations.openfire.plugin.servlet.TokenAuthenticationFilter";
+    private static final String TOKEN_AUTHENTICATION_FILTER = "org.dynamicsimulations.openfire.plugin.servlet.filter.TokenAuthenticationFilter";
 
     private static Map<String, Object> config;
     private static PackagesResourceConfig prc;

@@ -20,6 +20,7 @@
 package org.dynamicsimulations.openfire.plugin;
 
 import org.dynamicsimulations.openfire.plugin.model.UserData;
+import org.eclipse.jetty.util.log.Log;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
@@ -142,16 +143,16 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
         return (token != null && token.equals(this.secret) && enabled);
     }
 
-    public void updateUser(String username, UserData userUpdate)
+    public void updateUser(final String username, final UserData userUpdate)
     {
         final User user = getUser(username);
         if (!"".equals(userUpdate.getPassword())) user.setPassword(userUpdate.getPassword());
         if (!"".equals(userUpdate.getName())) user.setName(userUpdate.getName());
         if (!"".equals(userUpdate.getEmail())) user.setEmail(userUpdate.getEmail());
 
-        final Collection<Group> newGroups = new ArrayList<Group>();
-        if (!userUpdate.getGroups().isEmpty()) {
-            for (String group : userUpdate.getGroups()) {
+        final List<Group> newGroups = new ArrayList<Group>();
+        if (!"".equals(userUpdate.getGroups())) {
+            for (String group : userUpdate.getGroups().split(",")) {
                 try {
                     newGroups.add(GroupManager.getInstance().getGroup(group));
                 } catch (GroupNotFoundException e) {
@@ -161,10 +162,10 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
 
             Collection<Group> existingGroups = GroupManager.getInstance().getGroups(user);
             // Get the list of groups to add to the user
-            Collection<Group> groupsToAdd =  new ArrayList<Group>(newGroups);
+            List<Group> groupsToAdd = new ArrayList<Group>(newGroups);
             groupsToAdd.removeAll(existingGroups);
             // Get the list of groups to remove from the user
-            Collection<Group> groupsToDelete =  new ArrayList<Group>(existingGroups);
+            List<Group> groupsToDelete = new ArrayList<Group>(existingGroups);
             groupsToDelete.removeAll(newGroups);
 
             // Add the user to the new groups

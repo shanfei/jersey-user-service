@@ -1,27 +1,22 @@
 package org.dynamicsimulations.openfire.plugin.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 @XmlRootElement(name = "UserData")
 public class UserData {
     private String password;
     private String email;
     private String name;
-    private List<String> groups;
+    private String groups;
 
     public UserData() {
-        groups = new ArrayList<String>();
     }
 
-    public UserData(String password, String email, String name, String groups) {
+    public UserData(String password, String email, String name, String groupsNames) {
         this.password = password;
         this.email = email;
         this.name = name;
-
-        setGroups(groups);
+        this.groups = groupsNames;
     }
 
     public String getPassword() {
@@ -48,18 +43,11 @@ public class UserData {
         this.name = name;
     }
 
-    public List<String> getGroups() {
+    public String getGroups() {
         return groups;
     }
 
-    public void setGroups(List<String> groups) {
-        this.groups = groups;
-    }
-
     public void setGroups(String groups) {
-        final StringTokenizer tkn = new StringTokenizer(groups, ",");
-        while (tkn.hasMoreTokens()) {
-            this.groups.add(tkn.nextToken());
-        }
+        this.groups = groups;
     }
 }

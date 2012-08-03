@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin>
+    <class>org.dynamicsimulations.openfire.plugin.JerseyUserServicePlugin</class>
+    <name>Jersey User Service</name>
+    <description>Allows administration of users via Jersey REST requests.</description>
+    <author>Patrick Snape</author>
+    <version>0.0.1</version>
+    <date>03/08/2012</date>
+    <minServerVersion>3.7.1</minServerVersion>
+    
+    <adminconsole>		
+        <tab id="tab-server">
+            <sidebar id="sidebar-server-settings">
+                <item id="user-service" name="User Service" url="user-service.jsp"
+                     description="Click to manage the service that allows remote admin of users" />
+            </sidebar>
+        </tab>
+    </adminconsole>
+
+</plugin>

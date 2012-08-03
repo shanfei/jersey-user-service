@@ -19,6 +19,7 @@
 
 package org.dynamicsimulations.openfire.plugin;
 
+import org.dynamicsimulations.openfire.plugin.model.UserData;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
@@ -64,7 +65,7 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
             secret = StringUtils.randomString(8);
             setSecret(secret);
         }
-        
+
         // See if the service is enabled or not.
         enabled = JiveGlobals.getBooleanProperty("plugin.servlet.enabled", true);
 
@@ -101,9 +102,8 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
             }
         }
     }
-    
+
     public void deleteUser(String username)
-            throws org.jivesoftware.openfire.user.UserNotFoundException
     {
         User user = getUser(username);
         userManager.deleteUser(user);
@@ -141,21 +141,19 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
     {
         return (token != null && token.equals(this.secret) && enabled);
     }
-    
-    public void updateUser(String username, String password, String name, String email, String groupNames)
-            throws org.jivesoftware.openfire.user.UserNotFoundException
-    {
-        User user = getUser(username);
-        if (password != null) user.setPassword(password);
-        if (name != null) user.setName(name);
-        if (email != null) user.setEmail(email);
 
-        if (groupNames != null) {
-            Collection<Group> newGroups = new ArrayList<Group>();
-            StringTokenizer tkn = new StringTokenizer(groupNames, ",");
-            while (tkn.hasMoreTokens()) {
+    public void updateUser(String username, UserData userUpdate)
+    {
+        final User user = getUser(username);
+        if (!"".equals(userUpdate.getPassword())) user.setPassword(userUpdate.getPassword());
+        if (!"".equals(userUpdate.getName())) user.setName(userUpdate.getName());
+        if (!"".equals(userUpdate.getEmail())) user.setEmail(userUpdate.getEmail());
+
+        final Collection<Group> newGroups = new ArrayList<Group>();
+        if (!userUpdate.getGroups().isEmpty()) {
+            for (String group : userUpdate.getGroups()) {
                 try {
-                    newGroups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
+                    newGroups.add(GroupManager.getInstance().getGroup(group));
                 } catch (GroupNotFoundException e) {
                     // Ignore this group
                 }
@@ -179,7 +177,7 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
             }
         }
     }
-    
+
     /**
      * Returns the the requested user or <tt>null</tt> if there are any
      * problems that don't throw an error.
@@ -205,7 +203,7 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
             throw new UserNotFoundException(e);
         }
     }
-    
+
     /**
      * Returns the secret key that only valid requests should know.
      *

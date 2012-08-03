@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 public class UserNotFoundException extends WebApplicationException {
 
     public UserNotFoundException(final Exception e) {
-        super(Response.status(200)
+        super(Response.status(400)
                 .entity(new ErrorResponse(e))
                 .type(MediaType.APPLICATION_JSON)
                 .build());

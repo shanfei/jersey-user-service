@@ -118,7 +118,6 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
      *         does not exist in the local server.
      */
     public void disableUser(String username)
-            throws org.jivesoftware.openfire.user.UserNotFoundException
     {
         User user = getUser(username);
         LockOutManager.getInstance().disableAccount(username, null, null);
@@ -132,7 +131,6 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
      *         does not exist in the local server.
      */
     public void enableUser(String username)
-            throws org.jivesoftware.openfire.user.UserNotFoundException
     {
         User user = getUser(username);
         LockOutManager.getInstance().enableAccount(username);

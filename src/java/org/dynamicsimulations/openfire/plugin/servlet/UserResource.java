@@ -29,6 +29,22 @@ public class UserResource {
         return new UserResponse(plugin.getUser(userName));
     }
 
+    @GET
+    @Path("/{username}/enable")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public SuccessResponse enableUser(@PathParam(value = "username") final String userName) {
+        plugin.enableUser(userName);
+        return new SuccessResponse(userName, "ENABLE");
+    }
+
+    @GET
+    @Path("/{username}/disable")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public SuccessResponse disableUser(@PathParam(value = "username") final String userName) {
+        plugin.disableUser(userName);
+        return new SuccessResponse(userName, "DISABLE");
+    }
+
     @DELETE
     @Path("/{username}/")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

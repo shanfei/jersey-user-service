@@ -61,7 +61,7 @@ public class UserResource {
         return new SuccessResponse(userName, "DELETE");
     }
 
-    @POST
+    @PUT
     @Path("/{username}/")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON})

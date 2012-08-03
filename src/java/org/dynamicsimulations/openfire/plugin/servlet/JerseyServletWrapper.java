@@ -32,8 +32,7 @@ public class JerseyServletWrapper extends ServletContainer {
         config = new HashMap<String, Object>();
         config.put(RESOURCE_CONFIG_CLASS_KEY, RESOURCE_CONFIG_CLASS);
         config.put(SCAN_PACKAGE_KEY, SCAN_PACKAGE_DEFAULT);
-        config.put(CONTAINER_REQUEST_FILTER_KEY, TOKEN_AUTHENTICATION_FILTER);
-        config.put(CONTAINER_REQUEST_FILTER_KEY, ALLOWED_IP_FILTER);
+        config.put(CONTAINER_REQUEST_FILTER_KEY, TOKEN_AUTHENTICATION_FILTER + ";" + ALLOWED_IP_FILTER);
 
         prc = new PackagesResourceConfig(SCAN_PACKAGE_DEFAULT);
         prc.setPropertiesAndFeatures(config);

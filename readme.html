@@ -51,7 +51,7 @@
 <body>
 
 <h1>
-User Service Plugin Readme
+Jersey User Service Plugin Readme
 </h1>
 
 <h2>Overview</h2>
@@ -60,16 +60,14 @@ User Service Plugin Readme
 The User Service Plugin provides the ability to add,edit,delete users by sending an http request to the server.
 It is intended to be used by applications automating the user administration process. 
 This plugin's functionality is useful for applications that need to administer users outside of the Openfire admin console.
-An example of such an application might be a live sports reporting application that uses XMPP as its transport, and
-creates/deletes users according to the receipt, or non receipt, of a subscription fee.
 
 </p>
 
 <h2>Installation</h2>
 
-<p>Copy userservice.jar into the plugins directory of your Openfire server. The
+<p>Copy jerseyuserservice.jar into the plugins directory of your Openfire server. The
 plugin will then be automatically deployed. To upgrade to a new version, copy the new
-userservice.jar file over the existing file.</p>
+jerseyuserservice.jar file over the existing file.</p>
 
 <h2>Configuration</h2>
 
@@ -82,115 +80,81 @@ Openfire makes the request.
 
 <h2>Using the Plugin</h2>
 
-To administer users, submit HTTP requests to the userservice service. 
-The service address is [hostname]plugins/userService/userservice. For example,
-if your server name is "example.com", the URL is http://example.com/plugins/userService/userservice<p>
+To administer users, submit HTTP requests to the service. 
+The service address is [hostname]/plugins/jerseyuserservice/{username} - where {username} is the required username. 
+For example, if your server name is "example.com", the URL is http://example.com/plugins/jerseyuserservice/{username}<p>
 
-The following parameters can be passed into the request:<p>
+The service is based on a classic CRUD REST pattern. By changing the request type (GET, POST, PUT, DELETE) different actions can be performed on the user.
+All responses are either JSON or XML and this is changed by modifying the accepts header.
+All requests require the secret key as a query parameter "token={secret}".
 
 <div id="datatable">
 <table cellpadding="3" cellspacing="1" border="0" width="700">
 <tr>
-    <th colspan=2>Name</th><th>Description</th>
+    <th colspan=2>Name</th><th>Request Format</th><th>Description</th>
 </tr>
 <tr>
-    <td class="name">type</td><td>Required</td><td>The admin service required. 
-    Possible values are add, delete, update, enable, disable</td>
+    <td class="name">Get User</td>
+	<td>/{username} (GET)</td>
+	<td>Get's information about the requested username (username, name, email, jid)</td>
 </tr>
 <tr>
-    <td class="name">secret</td><td>Required</td>
-    <td>The secret key that allows access to the User Service.</td>
+    <td class="name">Update User</td>
+	<td>/{username} (PUT)</td>
+    <td>Update the username. Expects a JSON object of the form: <br/>
+	{"email":"john.smith@example.com", "groups":"Group1,Group2", "password":"password","name":"John Smith"}</td>
 </tr>
 <tr>
-    <td class="name">username</td><td>Required</td>
-    <td>The username of the user to add, update, delete, enable, or disable. ie the part before the @ symbol.</td>
+    <td class="name">Delete User</td>
+	<td>/{username} (DELETE)</td>
+    <td>Delete the username</td>
 </tr>
 <tr>
-    <td class="name">password</td><td>Required for add operation</td>
-    <td>The password of the new user or the user being updated.</td>
+    <td class="name">Add User</td>
+	<td>/{username} (POST)</td>
+    <td>Adds the user with the given username. Expects a JSON object of the form: <br/>
+	{"email":"john.smith@example.com", "groups":"Group1,Group2", "password":"password","name":"John Smith"}</td>
 </tr>
 <tr>
-    <td class="name">name</td><td>Optional</td>
-    <td>The display name of the new user or the user being updated.</td>
+    <td class="name">Enabled User</td>
+	<td>/{username}/enable (GET)</td>
+    <td>Re-enables the given user</td>
 </tr>
 <tr>
-    <td class="name">email</td><td>Optional</td>
-    <td>The email address of the new user or the user being updated.</td>
+    <td class="name">Disable User</td>
+	<td>/{username}/disable (GET)</td>
+    <td>Locks out the given user</td>
 </tr>
 <tr>
-    <td class="name">groups</td><td>Optional</td>
-    <td>List of groups where the user is a member. Values are comma delimited.</td>
+    <td class="name">Delete all users</td>
+	<td>/purge (GET)</td>
+    <td>Delete all users except the default user called "admin"</td>
 </tr>
-
-
 </table><p>
 
-
-<p><b>Sample HTML</b><p>
-
-The following example adds a user
-
-<ul>
-<form>
-<textarea cols=65 rows=3 wrap=virtual>
-http://example.com:9090/plugins/userService/userservice?type=add&secret=bigsecret&username=kafka&password=drowssap&name=franz&email=franz@kafka.com
-</textarea>
-</form>
-</ul>
-
-The following example deletes a user
-
-<ul>
-<form>
-<textarea cols=65 rows=4 wrap=virtual>
-http://example.com:9090/plugins/userService/userservice?type=delete&secret=bigsecret&username=kafka
-</textarea>
-</form>
-</ul>
-
-The following example disables a user (lockout)
-
-<ul>
-<form>
-<textarea cols=65 rows=4 wrap=virtual>
-http://example.com:9090/plugins/userService/userservice?type=disable&secret=bigsecret&username=kafka
-</textarea>
-</form>
-</ul>
-
-The following example enables a user (removes lockout)
-
-<ul>
-<form>
-<textarea cols=65 rows=4 wrap=virtual>
-http://example.com:9090/plugins/userService/userservice?type=enable&secret=bigsecret&username=kafka
-</textarea>
-</form>
-</ul>
-
-
-This example updates a user
-
-<ul>
-<form>
-<textarea cols=65 rows=3 wrap=virtual>
-http://example.com:9090/plugins/userService/userservice?type=update&secret=bigsecret&username=kafka&password=drowssap&name=franz&email=beetle@kafka.com
-</textarea>
-</form>
-</ul>
-
 <br><br>
-* When sending double characters (Chinese/Japanese/Korean etc) you should URLEncode the string as utf8.<br> 
-In Java this is done like this<br> 
+* When sending double characters (Chinese/Japanese/Korean etc) you should url encode the string as UTF-8.<br> 
+In Java this is done like this:<br> 
 URLEncoder.encode(username, "UTF-8"));
 <br>If the strings are encoded incorrectly, double byte characters will look garbeled in the Admin Console.
 
 
 <h2>Server Reply</h2>
 
-The server will reply to all User Service requests with an XML result page. 
-If the request was processed successfully the return will be a "result" element with a text body of "OK".
-If the request was unsuccessful, the return will be an "error" element with a text body of one of the following error strings.
+The server will reply to all User Service requests with an XML or JSON response. 
+If the request was processed successfully the return will be an object of the form: <br/>
+{
+    "action": "UPDATE",
+    "userName": "JohnSmith"
+}
+<br/>
+Where the action represents the action performed.
+<br/>
+If the request was unsuccessful, the return will be an object of the form: <br/>
+{
+    "reason": "Username JohnSmith already exists",
+    "type": "UserAlreadyExistsException"
+}
 <p>
 
 
@@ -198,10 +162,6 @@ If the request was unsuccessful, the return will be an "error" element with a te
 <table cellpadding="3" cellspacing="1" border="0" width="700">
 <tr>
     <th >Error String</th><th>Description</th>
-</tr>
-<tr>
-    <td class="name">IllegalArgumentException</td>
-    <td>one of the parameters passed in to the User Service was bad.</td>
 </tr>
 <tr>
     <td class="name">UserNotFoundException</td>
@@ -216,11 +176,6 @@ If the request was unsuccessful, the return will be an "error" element with a te
     <td class="name">RequestNotAuthorised</td>
     <td>The supplied secret does not match the secret specified in the Admin Console or the requester is not a valid IP address.</td>
 </tr>
-<tr>
-    <td class="name">UserServiceDisabled</td>
-    <td>The User Service is currently set to disabled in the Admin Console.</td>
-</tr>
-
 
 </table><p>
 

@@ -22,4 +22,11 @@ public class NotAuthorizedException extends WebApplicationException {
                 .build());
     }
 
+    public NotAuthorizedException(String message) {
+        super(Response.status(401)
+                .entity(new ErrorResponse(NotAuthorizedException.class, message))
+                .type(MediaType.APPLICATION_JSON)
+                .build());
+    }
+
 }

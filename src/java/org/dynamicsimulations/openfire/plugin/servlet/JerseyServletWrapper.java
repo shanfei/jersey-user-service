@@ -23,6 +23,7 @@ public class JerseyServletWrapper extends ServletContainer {
 
     private static final String CONTAINER_REQUEST_FILTER_KEY = "com.sun.jersey.spi.container.ContainerRequestFilters";
     private static final String TOKEN_AUTHENTICATION_FILTER = "org.dynamicsimulations.openfire.plugin.servlet.filter.TokenAuthenticationFilter";
+    private static final String ALLOWED_IP_FILTER = "org.dynamicsimulations.openfire.plugin.servlet.filter.AllowedIPFilter";
 
     private static Map<String, Object> config;
     private static PackagesResourceConfig prc;
@@ -32,6 +33,8 @@ public class JerseyServletWrapper extends ServletContainer {
         config.put(RESOURCE_CONFIG_CLASS_KEY, RESOURCE_CONFIG_CLASS);
         config.put(SCAN_PACKAGE_KEY, SCAN_PACKAGE_DEFAULT);
         config.put(CONTAINER_REQUEST_FILTER_KEY, TOKEN_AUTHENTICATION_FILTER);
+        config.put(CONTAINER_REQUEST_FILTER_KEY, ALLOWED_IP_FILTER);
+
         prc = new PackagesResourceConfig(SCAN_PACKAGE_DEFAULT);
         prc.setPropertiesAndFeatures(config);
         prc.getClasses().add(UserResource.class);

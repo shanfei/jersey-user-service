@@ -62,7 +62,7 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
 
         secret = JiveGlobals.getProperty("plugin.servlet.secret", "");
         // If no secret key has been assigned to the user service yet, assign a random one.
-        if (secret.equals("")){
+        if (secret.equals("")) {
             secret = StringUtils.randomString(8);
             setSecret(secret);
         }
@@ -84,8 +84,7 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
     }
 
     public void createUser(String username, String password, String name, String email, String groupNames)
-            throws UserAlreadyExistsException
-    {
+            throws UserAlreadyExistsException {
         userManager.createUser(username, password, name, email);
 
         if (groupNames != null) {
@@ -104,45 +103,26 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
         }
     }
 
-    public void deleteUser(String username)
-    {
+    public void deleteUser(String username) {
         User user = getUser(username);
         userManager.deleteUser(user);
     }
 
-    /**
-     * Lock Out on a given username
-     *
-     * @param username the username of the local user to disable.
-     * @throws UserNotFoundException if the requested user
-     *         does not exist in the local server.
-     */
-    public void disableUser(String username)
-    {
+    public void disableUser(String username) {
         User user = getUser(username);
         LockOutManager.getInstance().disableAccount(username, null, null);
     }
 
-    /**
-     * Remove the lockout on a given username
-     *
-     * @param username the username of the local user to enable.
-     * @throws UserNotFoundException if the requested user
-     *         does not exist in the local server.
-     */
-    public void enableUser(String username)
-    {
+    public void enableUser(String username) {
         User user = getUser(username);
         LockOutManager.getInstance().enableAccount(username);
     }
 
-    public boolean isRequestAuthorized(final String token)
-    {
+    public boolean isRequestAuthorized(final String token) {
         return (token != null && token.equals(this.secret) && enabled);
     }
 
-    public void updateUser(final String username, final UserData userUpdate)
-    {
+    public void updateUser(final String username, final UserData userUpdate) {
         final User user = getUser(username);
         if (!"".equals(userUpdate.getPassword())) user.setPassword(userUpdate.getPassword());
         if (!"".equals(userUpdate.getName())) user.setName(userUpdate.getName());
@@ -177,17 +157,7 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
         }
     }
 
-    /**
-     * Returns the the requested user or <tt>null</tt> if there are any
-     * problems that don't throw an error.
-     *
-     * @param username the username of the local user to retrieve.
-     * @return the requested user.
-     * @throws UserNotFoundException if the requested user
-     *         does not exist in the local server.
-     */
-    public User getUser(String username)
-    {
+    public User getUser(String username) {
         JID targetJID = server.createJID(username, null);
         // Check that the sender is not requesting information of a remote server entity
         if (targetJID.getNode() == null) {
@@ -203,20 +173,10 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
         }
     }
 
-    /**
-     * Returns the secret key that only valid requests should know.
-     *
-     * @return the secret key.
-     */
     public String getSecret() {
         return secret;
     }
 
-    /**
-     * Sets the secret key that grants permission to use the servlet.
-     *
-     * @param secret the secret key.
-     */
     public void setSecret(String secret) {
         JiveGlobals.setProperty("plugin.servlet.secret", secret);
         this.secret = secret;
@@ -231,47 +191,31 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
         this.allowedIPs = allowedIPs;
     }
 
-    /**
-     * Returns true if the user service is enabled. If not enabled, it will not accept
-     * requests to create new accounts.
-     *
-     * @return true if the user service is enabled.
-     */
     public boolean isEnabled() {
         return enabled;
     }
 
-    /**
-     * Enables or disables the user service. If not enabled, it will not accept
-     * requests to create new accounts.
-     *
-     * @param enabled true if the user service should be enabled.
-     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        JiveGlobals.setProperty("plugin.servlet.enabled",  enabled ? "true" : "false");
+        JiveGlobals.setProperty("plugin.servlet.enabled", enabled ? "true" : "false");
     }
 
     public void propertySet(String property, Map<String, Object> params) {
         if (property.equals("plugin.servlet.secret")) {
-            this.secret = (String)params.get("value");
-        }
-        else if (property.equals("plugin.servlet.enabled")) {
-            this.enabled = Boolean.parseBoolean((String)params.get("value"));
-        }
-        else if (property.equals("plugin.servlet.allowedIPs")) {
-            this.allowedIPs = StringUtils.stringToCollection((String)params.get("value"));
+            this.secret = (String) params.get("value");
+        } else if (property.equals("plugin.servlet.enabled")) {
+            this.enabled = Boolean.parseBoolean((String) params.get("value"));
+        } else if (property.equals("plugin.servlet.allowedIPs")) {
+            this.allowedIPs = StringUtils.stringToCollection((String) params.get("value"));
         }
     }
 
     public void propertyDeleted(String property, Map<String, Object> params) {
         if (property.equals("plugin.servlet.secret")) {
             this.secret = "";
-        }
-        else if (property.equals("plugin.servlet.enabled")) {
+        } else if (property.equals("plugin.servlet.enabled")) {
             this.enabled = false;
-        }
-        else if (property.equals("plugin.servlet.allowedIPs")) {
+        } else if (property.equals("plugin.servlet.allowedIPs")) {
             this.allowedIPs = Collections.emptyList();
         }
     }

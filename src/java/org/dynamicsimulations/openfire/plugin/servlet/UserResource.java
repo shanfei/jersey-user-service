@@ -69,4 +69,13 @@ public class UserResource {
         plugin.updateUser(userName, userData);
         return new SuccessResponse(userName, "UPDATE");
     }
+
+    @POST
+    @Path("/{username}/")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public SuccessResponse addUser(@PathParam(value = "username") final String userName, final UserData userData) {
+        plugin.createUser(userName, userData);
+        return new SuccessResponse(userName, "CREATED");
+    }
 }

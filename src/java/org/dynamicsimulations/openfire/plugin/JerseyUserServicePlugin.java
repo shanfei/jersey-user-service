@@ -28,8 +28,8 @@ import org.jivesoftware.openfire.group.GroupManager;
 import org.jivesoftware.openfire.group.GroupNotFoundException;
 import org.jivesoftware.openfire.lockout.LockOutManager;
 import org.dynamicsimulations.openfire.plugin.servlet.exception.UserNotFoundException;
+import org.dynamicsimulations.openfire.plugin.servlet.exception.UserAlreadyExistsException;
 import org.jivesoftware.openfire.user.User;
-import org.jivesoftware.openfire.user.UserAlreadyExistsException;
 import org.jivesoftware.openfire.user.UserManager;
 import org.jivesoftware.util.JiveGlobals;
 import org.jivesoftware.util.StringUtils;
@@ -85,23 +85,12 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
         PropertyEventDispatcher.removeListener(this);
     }
 
-    public void createUser(String username, String password, String name, String email, String groupNames)
-            throws UserAlreadyExistsException {
-        userManager.createUser(username, password, name, email);
-
-        if (groupNames != null) {
-            Collection<Group> groups = new ArrayList<Group>();
-            StringTokenizer tkn = new StringTokenizer(groupNames, ",");
-            while (tkn.hasMoreTokens()) {
-                try {
-                    groups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
-                } catch (GroupNotFoundException e) {
-                    // Ignore this group
-                }
-            }
-            for (Group group : groups) {
-                group.getMembers().add(server.createJID(username, null));
-            }
+    public void createUser(String username, UserData userData) {
+        try {
+            User user = userManager.createUser(username, userData.getPassword(), userData.getName(), userData.getName());
+            addUserGroups(user, userData.getGroups());
+        } catch (org.jivesoftware.openfire.user.UserAlreadyExistsException e) {
+            throw new UserAlreadyExistsException(e);
         }
     }
 
@@ -124,15 +113,19 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
         return (token != null && token.equals(this.secret) && enabled);
     }
 
-    public void updateUser(final String username, final UserData userUpdate) {
+    public void updateUser(final String username, final UserData userData) {
         final User user = getUser(username);
-        if (!"".equals(userUpdate.getPassword())) user.setPassword(userUpdate.getPassword());
-        if (!"".equals(userUpdate.getName())) user.setName(userUpdate.getName());
-        if (!"".equals(userUpdate.getEmail())) user.setEmail(userUpdate.getEmail());
+        if (!"".equals(userData.getPassword())) user.setPassword(userData.getPassword());
+        if (!"".equals(userData.getName())) user.setName(userData.getName());
+        if (!"".equals(userData.getEmail())) user.setEmail(userData.getEmail());
 
+        addUserGroups(user, userData.getGroups());
+    }
+
+    private void addUserGroups(User user, String groups) {
         final List<Group> newGroups = new ArrayList<Group>();
-        if (!"".equals(userUpdate.getGroups())) {
-            for (String group : userUpdate.getGroups().split(",")) {
+        if (!"".equals(groups)) {
+            for (String group : groups.split(",")) {
                 try {
                     newGroups.add(GroupManager.getInstance().getGroup(group));
                 } catch (GroupNotFoundException e) {
@@ -150,11 +143,11 @@ public class JerseyUserServicePlugin implements Plugin, PropertyEventListener {
 
             // Add the user to the new groups
             for (Group group : groupsToAdd) {
-                group.getMembers().add(server.createJID(username, null));
+                group.getMembers().add(server.createJID(user.getUsername(), null));
             }
             // Remove the user from the old groups
             for (Group group : groupsToDelete) {
-                group.getMembers().remove(server.createJID(username, null));
+                group.getMembers().remove(server.createJID(user.getUsername(), null));
             }
         }
     }
